@@ -9,7 +9,6 @@
   "author": "Urip Subekti",
   "license": "ISC",
   "dependencies": {
-    "internal-ip": "^4.3.0",
     "portscanner": "^2.2.0"
   }
 }

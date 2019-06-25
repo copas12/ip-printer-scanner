@@ -1,5 +1,4 @@
 const portscanner = require("portscanner");
-const internalIp = require("internal-ip");
 
 const checkIndivualIP = async ip => {
   return new Promise(resolve => {
@@ -12,8 +11,8 @@ const checkIndivualIP = async ip => {
   });
 };
 
-const scan = async () => {
-  const ip = (await internalIp.v4()).split(".");
+const scan = async (ipV4) => {
+  const ip = ipV4.split(".");
   const prefixIP = ip[0] + "." + ip[1] + "." + ip[2];
   const classes = prefixIP.split(".");
   const x = parseInt(classes[2]);
