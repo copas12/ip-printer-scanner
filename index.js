@@ -1,37 +1,40 @@
-const portscanner = require("portscanner");
+const {v4} = require("internal-ip");
+const qjobs = require("qjobs");
+const isPortReachable = require('is-port-reachable');
 
-const checkIndivualIP = async ip => {
-  return new Promise(resolve => {
-    portscanner.checkPortStatus(9100, ip, function(error, status) {
-      if (error) {
-        resolve({ ip, open: false });
-      }
-      status === "open" ? resolve({ ip, open: true }) : resolve({ ip, open: false });
-    });
-  });
-};
-
-const scan = async (ipV4) => {
-  const ip = ipV4.split(".");
-  const prefixIP = ip[0] + "." + ip[1] + "." + ip[2];
-  const classes = prefixIP.split(".");
-  const x = parseInt(classes[2]);
-  const arrayOfPrefix = [prefixIP];
-  if (x > 0) {
-    arrayOfPrefix.push(classes[0] + "." + classes[1] + "." + (x - 1).toString());
-  }
-  if (x < 255) {
-    arrayOfPrefix.push(classes[0] + "." + classes[1] + "." + (x + 1).toString());
-  }
-  const arrayOfPromises = [];
-  for (const pref of arrayOfPrefix) {
-    for (let i = 0; i <= 255; i++) {
-      arrayOfPromises.push(checkIndivualIP(`${pref}.${i}`));
+const scan = async () => {
+  return new Promise(async (resolve) => {
+    const result = [];
+    const range = 2;
+    const ip = await v4();
+    const arrayIP = ip.split('.');
+    const subnet = parseInt(arrayIP[2]);
+    const fromSubnet = ((subnet-range) > 0) ? (subnet - range) : 0;
+    const toSubnet = ((subnet+range) < 225) ? (subnet + range) : 225;
+    const jobs = new qjobs({ maxConcurrency: 1000 });
+    
+    const job = async (args, next) => {
+      const checkResult = await isPortReachable(9100, {host: args.ip});
+      if (checkResult) result.push(args.ip);
+      next();
     }
-  }
+    for (let h=fromSubnet; h<=toSubnet; h++) {
+      for (let i=0; i<=225; i++) {
+        const ipToCheck = arrayIP[0] + '.' + arrayIP[1] + '.' + h.toString() + '.' + i.toString();
+        jobs.add(job,{ip: ipToCheck});
+      }
+    }
+    jobs.on('end', () => {
+      resolve(result);
+    });
+    jobs.run();
+})
+}
 
-  const result = (await Promise.all(arrayOfPromises)).filter(r => r.open);
-  return result.map(r => r.ip);
-};
+
+// scan().then(console.log)
+// checkIndivualIP('192.168.99.10').then(console.log);
+
+
 
 module.exports = { scan };
