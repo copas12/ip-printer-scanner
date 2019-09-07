@@ -1,14 +1,16 @@
 {
   "name": "ip-printer-scanner",
   "version": "1.0.0",
-  "description": "Module to get list of ip printer",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Urip Subekti",
+  "author": "",
   "license": "ISC",
   "dependencies": {
-    "portscanner": "^2.2.0"
+    "internal-ip": "^4.3.0",
+    "is-port-reachable": "^2.0.1",
+    "qjobs": "^1.2.0"
   }
 }
