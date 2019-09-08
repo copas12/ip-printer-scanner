@@ -1,12 +1,10 @@
-const {v4} = require("internal-ip");
 const qjobs = require("qjobs");
 const portscanner = require('portscanner');
 
-const scan = async () => {
+const scan = async (ip) => {
   return new Promise(async (resolve) => {
     const result = [];
     const range = 2;
-    const ip = await v4();
     const arrayIP = ip.split('.');
     const subnet = parseInt(arrayIP[2]);
     const fromSubnet = ((subnet-range) > 0) ? (subnet - range) : 0;
