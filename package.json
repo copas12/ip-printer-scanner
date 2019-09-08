@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "internal-ip": "^4.3.0",
     "portscanner": "^2.2.0",
     "qjobs": "^1.2.0"
   }
